@@ -1098,6 +1098,7 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 @keyframes trn{0%{transform:translateX(calc(100vw + 10px))}100%{transform:translateX(-180px)}}
 @media (prefers-reduced-motion:reduce){.bnr .trn{animation:none;transform:translateX(12px)}}
 .cn{top:6px;font-size:44px}
+.thx,.tha{display:grid;place-items:center;padding:0;line-height:0}.thx svg,.tha svg{display:block}
 </style>
 </head>
 <body>
@@ -1350,7 +1351,7 @@ if("serviceWorker" in navigator&&/github\.io$|pages\.dev$/.test(location.hostnam
 function fit(){if(!t.clientWidth)return;t.style.fontSize="60px";const r=t.clientWidth/t.scrollWidth;t.style.fontSize=Math.max(20,Math.min(44,Math.floor(60*r*0.98)))+"px"}
 window.etFitTitle=fit;fit();addEventListener("resize",fit);document.fonts&&document.fonts.ready.then(fit);setTimeout(fit,600)})();
 </script>
-<div class="ths" id="thSheet" role="dialog" aria-modal="true" aria-label="Elegir estilo de la app" hidden><div class="thsb"><div class="thh"><b>Estilo de la app</b><button type="button" class="thx" id="thClose" aria-label="Cerrar">✕</button></div><div class="thrw"><button type="button" class="tha l" aria-label="Anterior">‹</button><div class="thc">
+<div class="ths" id="thSheet" role="dialog" aria-modal="true" aria-label="Elegir estilo de la app" hidden><div class="thsb"><div class="thh"><b>Estilo de la app</b><button type="button" class="thx" id="thClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="thrw"><button type="button" class="tha l" aria-label="Anterior"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><div class="thc">
 <button type="button" class="tcard" data-thm="noche" aria-label="Estilo Noche elegante" title="Noche elegante"><span class="tp" style="--a:#0b0c0f;--b:#151920;--c:#b5cbf0;--d:#eef1f5"><i></i><i></i><i></i></span></button>
 <button type="button" class="tcard" data-thm="luminoso" aria-label="Estilo Luminoso negro" title="Luminoso negro"><span class="tp" style="--a:#f7f7f5;--b:#efefec;--c:#111214;--d:#e5402b"><i></i><i></i><i></i></span></button>
 <button type="button" class="tcard" data-thm="cobalto" aria-label="Estilo Luminoso azul" title="Luminoso azul"><span class="tp" style="--a:#f6f7fb;--b:#e9eefa;--c:#1c3fa0;--d:#e5402b"><i></i><i></i><i></i></span></button>
@@ -1363,7 +1364,7 @@ window.etFitTitle=fit;fit();addEventListener("resize",fit);document.fonts&&docum
 <button type="button" class="tcard" data-thm="contraste" aria-label="Estilo Alto contraste" title="Alto contraste"><span class="tp" style="--a:#000000;--b:#1c1c1c;--c:#ffffff;--d:#ffd400"><i></i><i></i><i></i></span></button>
 <button type="button" class="tcard" data-thm="rosa" aria-label="Estilo Rosado lady" title="Rosado lady"><span class="tp" style="--a:#fcf1f4;--b:#f6e1e8;--c:#c94f7c;--d:#c94f7c"><i></i><i></i><i></i></span></button>
 <button type="button" class="tcard" data-thm="morado" aria-label="Estilo Morado inclusivo" title="Morado inclusivo"><span class="tp" style="--a:#17122a;--b:#2a2148;--c:#c4b2ff;--d:#c4b2ff"><i></i><i></i><i></i></span></button>
-</div><button type="button" class="tha r" aria-label="Siguiente">›</button></div><div class="thd" aria-hidden="true"></div></div></div>
+</div><button type="button" class="tha r" aria-label="Siguiente"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div><div class="thd" aria-hidden="true"></div></div></div>
 <script>
 /* estilo de la app: el del cuestionario por defecto; el viajero puede cambiarlo y queda guardado */
 (function(){const QUIZ="noche",K="et-theme",TC={noche:"#0b0c0f",luminoso:"#f7f7f5",cobalto:"#f6f7fb",calido:"#f6efe3",natura:"#111d17",sepia:"#f3ead8",mar:"#f4f8fb",atardecer:"#1e1424",nordico:"#eef0f2",contraste:"#000000",rosa:"#fcf1f4",morado:"#17122a"};
