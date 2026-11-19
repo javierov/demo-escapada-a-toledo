@@ -1104,6 +1104,11 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 <section id="s-viaje">
   <div class="bnr" aria-hidden="true" id="bnr"></div>
   <div class="hh"><h1 class="brand">Escapada a Toledo</h1><div class="hs"><div><p class="sub">Viernes 20 de noviembre</p><p class="sub2">De 10:30 a 17:00 · todo a pie</p></div><button type="button" class="thb" id="thOpen" aria-haspopup="dialog" aria-controls="thSheet"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/></svg>Estilo app</button></div></div>
+  <div class="carw"><div class="car" id="car"></div>
+    <button type="button" class="arr l" id="arrL" aria-label="Foto anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="arr r" id="arrR" aria-label="Foto siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
   <div class="pad" id="nowbox"></div>
   <div class="pad">
     <h2><span>Tu ruta del día</span><button type="button" data-go="mapa">Ver mapa</button></h2>
@@ -1215,6 +1220,21 @@ const curIdx=m=>{let k=-1;ST.forEach((s,i)=>{if(m>=s.m)k=i});return k};
 const BN=[["panorama","TOLEDO"],["catedral","CATEDRAL"],["juderia","JUDERÍA"]];
 $("bnr").innerHTML=BN.map(([f])=>`<div class="bs">${ph(f)}</div>`).join("")+BN.map(([,n])=>`<span class="cn">${n}</span>`).join("");
 
+/* ---------- fotos grandes de la portada ---------- */
+const CARS=[["panorama","Toledo","La ciudad de las tres culturas",0],["catedral","Catedral Primada","11:10 · gótica y llena de Greco",2],["juderia","La Judería","13:15 · callejones y azulejos",5]];
+$("car").innerHTML=CARS.map(([f,n,t,k])=>`<button type="button" class="cc" data-stop="${k}" aria-label="${n}">${ph(f,"scrim")}<span class="tx"><b>${n}</b><span>${t}</span></span></button>`).join("");
+$("dots").innerHTML=CARS.map(()=>"<i></i>").join("");
+function carState(){const car=$("car"),cs=[...car.children],x=car.scrollLeft;let k=0,best=1e9;cs.forEach((c,i)=>{const dd=Math.abs(c.offsetLeft-car.firstElementChild.offsetLeft-x);if(dd<best){best=dd;k=i}});
+  $("dots").querySelectorAll("i").forEach((d,i)=>d.classList.toggle("on",i===k));$("arrL").hidden=x<8;$("arrR").hidden=x>car.scrollWidth-car.clientWidth-8;return k}
+$("car").addEventListener("scroll",()=>requestAnimationFrame(carState),{passive:true});
+const step=dir=>{const car=$("car"),k=carState(),t=car.children[Math.max(0,Math.min(car.children.length-1,k+dir))];car.scrollTo({left:t.offsetLeft-car.firstElementChild.offsetLeft,behavior:"smooth"})};
+$("arrL").onclick=e=>{e.stopPropagation();step(-1)};$("arrR").onclick=e=>{e.stopPropagation();step(1)};
+/* las fotos llenan lo que queda de la primera pantalla: termina limpia, justo después de los puntos */
+function fitCar(){const sv=$("s-viaje"),car=$("car");if(sv.hidden)return;const cs=[...car.children];cs.forEach(c=>{c.style.height="";c.style.aspectRatio=""});
+  const w=cs[0].offsetWidth,top=car.getBoundingClientRect().top+scrollY,dots=$("dots").offsetHeight+10;
+  const h=Math.round(Math.max(170,Math.min(innerHeight-top-dots-14,w*2.1)));cs.forEach(c=>{c.style.aspectRatio="auto";c.style.height=h+"px"});carState()}
+addEventListener("resize",()=>requestAnimationFrame(fitCar));new ResizeObserver(carState).observe($("car"));
+
 /* ---------- «Hoy» ---------- */
 function hoyBox(){const f=phase(),h=Math.floor(f.t.m/60);
   const G0=h>=6&&h<13?"Buenos días":h>=13&&h<20?"Buenas tardes":"Buenas noches";
@@ -1300,7 +1320,7 @@ function route_(){
   const m=h.match(/^prueba-(\d+)(?:-(\d{1,2})(\d{2})?)?$/);
   if(m){SIM={y:Y,mo:M,d:+m[1],m:(m[2]!==undefined?+m[2]:9)*60+(m[3]?+m[3]:0)};try{sessionStorage.setItem("et-sim",JSON.stringify(SIM))}catch(e){}history.replaceState(null,"",location.pathname+location.search);h=""}
   const id=["mapa","comer"].includes(h)?h:"viaje";show(id);
-  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else window.scrollTo({top:0});requestAnimationFrame(()=>window.etFitTitle&&window.etFitTitle())}
+  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else window.scrollTo({top:0});requestAnimationFrame(()=>{window.etFitTitle&&window.etFitTitle();fitCar()});document.fonts&&document.fonts.ready.then(fitCar)}
   if(id==="comer"){renderR();window.scrollTo({top:0})}
   if(id==="mapa"){window.scrollTo({top:0});drawMap(pendPt);pendPt=null}}
 window.addEventListener("hashchange",route_);
