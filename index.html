@@ -1312,7 +1312,7 @@ function renderWx(){const w=WX.d,[ic,tx]=WMO(w[0]),hh=Object.entries(WX.h);
   $("wxbox").innerHTML=`<h3 class="bh"><span class="bi">${ico(ic,2)}</span>El tiempo del viernes</h3>
   <div class="wxt">${wim(w[0],"wxi")}<span class="wxn">${w[1]}°</span><span><b>${tx}</b><small>Máxima ${w[1]}° · mínima ${w[2]}°${w[3]!=null?` · lluvia ${w[3]}%`:""}</small></span></div>
   <div class="wxh">${hh.map(([h,[c,t,pp]])=>`<span><small>${h}:00</small>${wim(c,"wxhi")}<b>${t}°</b>${pp>=20?`<small>${pp}%</small>`:""}</span>`).join("")}</div>
-  <div class="wxr"><img src="fotos/tiempo/impermeable.png" alt=""><img src="fotos/tiempo/zapatillas.png" alt=""><span>${ropa(w)}</span></div>${w[3]>=40?`<p class="rtip">${ico("umb",2)}<span>Puede llover: mira «Si llueve», más abajo.</span></p>`:""}
+  <p class="rtip">${ico("shirt",2)}<span>${ropa(w)}</span></p>${w[3]>=40?`<p class="rtip">${ico("umb",2)}<span>Puede llover: mira «Si llueve», más abajo.</span></p>`:""}
   <p class="note" style="font-size:12.5px;margin-top:8px">Previsión de Open-Meteo, actualizada el ${at.getDate()} a las ${hm}.</p>`}
 async function loadWx(){if(LS("wx")&&Date.now()-new Date(LS("wx").at).getTime()<3600e3)return;
   try{const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=39.8628&longitude=-4.0273&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=temperature_2m,precipitation_probability,weather_code&timezone=Europe%2FMadrid&start_date=2026-11-20&end_date=2026-11-20");
