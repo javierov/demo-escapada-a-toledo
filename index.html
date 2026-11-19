@@ -1118,6 +1118,18 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 .opg{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.01em;color:#e7c07a;border:1px solid rgb(231 192 122/.45);border-radius:999px;padding:1px 7px;vertical-align:1px}
 .stp.opt .db{border-style:dashed}
 .altg{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;margin:0;padding:10px 12px;border-radius:12px;background:rgb(120 200 150/.08);border:1px solid rgb(120 200 150/.25);font-size:14.5px;line-height:1.45}.altg svg{width:20px;height:20px;color:#7fcf9e;margin-top:1px}
+/* «Dónde estoy» */
+.mebtn{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;border:0;border-radius:999px;background:#fff;color:#1b4fd6;font:700 13.5px/1 inherit;font-family:inherit;box-shadow:0 2px 10px rgb(0 0 0/.3);cursor:pointer}
+.mebtn[data-st="buscando"] span::after{content:"…";}
+.mebtn[data-st="buscando"] svg{animation:mebl 1s ease-in-out infinite}
+@keyframes mebl{50%{opacity:.3}}
+.mepin{background:none;border:0}
+.me{position:relative;width:44px;height:44px}
+.me .dot{position:absolute;left:14px;top:14px;width:16px;height:16px;border-radius:50%;background:#2f80ff;border:3px solid #fff;box-shadow:0 0 0 1px rgb(0 0 0/.15),0 2px 6px rgb(0 0 0/.35)}
+.me .merot{position:absolute;inset:0;transition:transform .25s linear;opacity:0}
+.me.hd .merot{opacity:1}
+.me .cone{position:absolute;left:50%;top:-12px;width:0;height:0;margin-left:-15px;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:32px solid rgb(47 128 255/.6);filter:blur(.3px)}
+.memsg{top:auto;bottom:58px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -1154,8 +1166,8 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
   <div class="sheet" style="margin-top:0;border-top:0"><h2>Mapa</h2>
     <div class="box mapbox" id="mapbox">
       <div class="chips" id="mapchips"></div>
-      <div class="mapw" id="mapw"><div class="mapoff" id="mapoff" hidden>Sin señal: las calles aparecerán con conexión. ✕</div></div>
-      <p class="note" style="margin-top:8px;font-size:13px">Toca un punto para ver qué es. La línea une las paradas de la ruta en orden. En el celular, el mapa se mueve con dos dedos; con uno se sigue bajando la página.</p></div>
+      <div class="mapw" id="mapw"><div class="mapoff" id="mapoff" hidden>Sin señal: las calles aparecerán con conexión. ✕</div><div class="mapoff memsg" id="memsg" hidden></div></div>
+      <p class="note" style="margin-top:8px;font-size:13px">Toca «Dónde estoy» para ver tu posición: el punto azul usa el GPS y la flecha la brújula del celular, también sin internet. Toca un punto para ver qué es. La línea une las paradas de la ruta en orden. En el celular, el mapa se mueve con dos dedos; con uno se sigue bajando la página.</p></div>
     <div id="maplist"></div></div>
 </section>
 
@@ -1367,12 +1379,38 @@ function initMap(){if(LM||!window.L)return;
   tl.on("tileload",()=>{const o=$("mapoff");if(o)o.hidden=true;if(!tilesOk){tilesOk=true;$("mapw").classList.add("tiles")}});
   let popOpen=false;const offShow=()=>{const o=$("mapoff");if(!tilesOk&&o&&!popOpen)o.hidden=false};setTimeout(offShow,5000);
   LM.on("popupclose",()=>{popOpen=false;offShow()});LM.on("popupopen",()=>{popOpen=true;const o=$("mapoff");if(o)o.hidden=true});
-  $("mapoff").onclick=e=>{e.stopPropagation();$("mapoff").remove()};
+  $("mapoff").onclick=e=>{e.stopPropagation();$("mapoff").remove()};$("memsg").onclick=e=>{e.stopPropagation();$("memsg").hidden=true};
   LG=L.layerGroup().addTo(LM);
+  meControl();
   const mw=$("mapw"),stop=e=>{if(e.touches&&e.touches.length>1)e.preventDefault()};
   mw.addEventListener("touchstart",stop,{passive:false});mw.addEventListener("touchmove",stop,{passive:false});
   ["gesturestart","gesturechange","gestureend"].forEach(t=>mw.addEventListener(t,e=>e.preventDefault(),{passive:false}))}
 const PC={r:"#3f6fd8",c:"#d9822b",n:"#2f9e6e"};
+/* ---------- «Dónde estoy»: punto azul con GPS y flecha con la brújula (funciona sin internet) ---------- */
+let ME=null,MEACC=null,WID=null,meOn=false,meFirst=true,HEAD=null,meRot=0;
+function meIcon(){return L.divIcon({className:"mepin",html:'<div class="me"><div class="merot"><i class="cone"></i></div><b class="dot"></b></div>',iconSize:[44,44],iconAnchor:[22,22]})}
+function setHead(h){if(h==null||isNaN(h))return;HEAD=h;const el=document.querySelector(".mepin .merot");if(!el)return;
+  let d=((h-meRot)%360+540)%360-180;meRot+=d;el.style.transform=`rotate(${meRot}deg)`;el.parentNode.classList.add("hd")}
+function onOri(e){let h=null;if(typeof e.webkitCompassHeading==="number")h=e.webkitCompassHeading;else if(e.absolute&&e.alpha!=null)h=360-e.alpha;
+  if(h==null)return;const so=(screen.orientation&&screen.orientation.angle)||window.orientation||0;setHead((h+so+360)%360)}
+function startCompass(){const go=()=>{if("ondeviceorientationabsolute" in window)addEventListener("deviceorientationabsolute",onOri,true);else addEventListener("deviceorientation",onOri,true)};
+  try{if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){DeviceOrientationEvent.requestPermission().then(go,go)}else go()}catch(e){go()}
+  setTimeout(()=>{if(HEAD==null&&meOn)alertMe("La brújula no responde: verás el punto azul, pero sin la flecha. Si es un iPhone, permite «Movimiento y orientación» al tocar el botón.")},6000)}
+function meMsg(t){const b=$("mebtn");if(b)b.dataset.st=t||""}
+function startMe(){if(!navigator.geolocation){alertMe("Este teléfono no da la ubicación.");return}
+  meOn=true;meFirst=true;meMsg("buscando");startCompass();
+  WID=navigator.geolocation.watchPosition(p=>{const ll=[p.coords.latitude,p.coords.longitude];meMsg("ok");
+    if(!ME){ME=L.marker(ll,{icon:meIcon(),zIndexOffset:1000,interactive:false}).addTo(LM);MEACC=L.circle(ll,{radius:p.coords.accuracy,color:"#2f80ff",weight:1,opacity:.5,fillColor:"#2f80ff",fillOpacity:.12,interactive:false}).addTo(LM);if(HEAD!=null)setTimeout(()=>setHead(HEAD),0)}
+    else{ME.setLatLng(ll);MEACC.setLatLng(ll).setRadius(p.coords.accuracy)}
+    if(HEAD==null&&p.coords.heading!=null&&!isNaN(p.coords.heading)&&p.coords.speed>0.5)setHead(p.coords.heading);
+    if(meFirst){meFirst=false;const far=LM.distance(ll,[39.8580,-4.0240])>6000;if(far)alertMe("Estás lejos de Toledo: el punto azul aparecerá cuando estés allí.");else LM.setView(ll,Math.max(LM.getZoom(),17))}},
+   err=>{meMsg("");alertMe(err.code===1?"Para ver dónde estás, permite la ubicación en el teléfono (Ajustes del navegador).":"No se encuentra la señal de GPS. Prueba en un sitio más abierto.")},
+   {enableHighAccuracy:true,maximumAge:5000,timeout:45000})}
+function stopMe(){if(WID!=null)navigator.geolocation.clearWatch(WID);WID=null}
+function alertMe(t){const o=$("mapoff");const m=$("memsg");if(!m)return;m.textContent=t+" ✕";m.hidden=false}
+function meControl(){const C=L.Control.extend({options:{position:"bottomright"},onAdd(){const b=L.DomUtil.create("button","mebtn");b.id="mebtn";b.type="button";b.setAttribute("aria-label","Dónde estoy");
+  b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 19 21 12 17 5 21z"/></svg><span>Dónde estoy</span>';
+  L.DomEvent.disableClickPropagation(b);b.onclick=()=>{if(!meOn||WID==null)startMe();else if(ME)LM.setView(ME.getLatLng(),Math.max(LM.getZoom(),17))};return b}});LM.addControl(new C())}
 function pts(){const a=[];if(mk==="all"||mk==="r")ST.forEach((s,i)=>{a.push({id:"r"+i,k:"r",n:s.n,la:s.la,lo:s.lo,lab:String(i+1),sub:`${s.h} · parada ${i+1}`,q:s.q,i})});
   if(mk==="all"||mk==="c")R.forEach((r,i)=>a.push({id:"c"+i,k:"c",n:r[0],la:r[6],lo:r[7],lab:"",sub:r[5],q:r[4],i}));
   if(mk==="all"||mk==="n")RN.forEach((r,i)=>a.push({id:"n"+i,k:"n",n:r[0],la:r[3],lo:r[4],lab:"★",sub:`Rincón secreto · cerca de la parada ${r[2]}`,q:r[5],i}));return a}
@@ -1399,7 +1437,7 @@ document.addEventListener("click",e=>{
   const p=e.target.closest("[data-pt]");if(p){const id=p.dataset.pt;if(mk!=="all"&&mk!==id[0])mk="all";pendPt=id;if(location.hash.slice(1)==="mapa"){drawMap(id);window.scrollTo({top:0,behavior:"smooth"})}else go("mapa");return}
   const j=e.target.closest("[data-jump]");if(j){goTo($(j.dataset.jump));return}
   const g=e.target.closest("[data-go]");if(g&&g.tagName==="BUTTON"){LM&&LM.closePopup();go(g.dataset.go)}});
-function show(id){document.querySelectorAll(".app>section").forEach(s=>s.hidden=s.id!=="s-"+id);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===(id==="viaje"?"":id)?"true":"false"))}
+function show(id){if(id!=="mapa")stopMe();else if(meOn&&WID==null&&LM)startMe();document.querySelectorAll(".app>section").forEach(s=>s.hidden=s.id!=="s-"+id);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===(id==="viaje"?"":id)?"true":"false"))}
 function route_(){
   let h=decodeURIComponent(location.hash.slice(1));
   const m=h.match(/^prueba-(\d+)(?:-(\d{1,2})(\d{2})?)?$/);
