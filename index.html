@@ -1281,7 +1281,7 @@ function renderR(){
 let LM=null,LG=null,mk="all",tilesOk=false,MK={};
 function initMap(){if(LM||!window.L)return;
   LM=L.map("mapw",{zoomControl:true,scrollWheelZoom:false,tap:true,dragging:!L.Browser.mobile,touchZoom:true});LM.attributionControl.setPrefix(false);
-  const tl=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{subdomains:"abc",maxZoom:19,attribution:"© OpenStreetMap"}).addTo(LM);
+  const tl=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{subdomains:"abc",maxZoom:19,crossOrigin:true,attribution:"© OpenStreetMap"}).addTo(LM);
   tl.on("tileload",()=>{const o=$("mapoff");if(o)o.hidden=true;if(!tilesOk){tilesOk=true;$("mapw").classList.add("tiles")}});
   let popOpen=false;const offShow=()=>{const o=$("mapoff");if(!tilesOk&&o&&!popOpen)o.hidden=false};setTimeout(offShow,5000);
   LM.on("popupclose",()=>{popOpen=false;offShow()});LM.on("popupopen",()=>{popOpen=true;const o=$("mapoff");if(o)o.hidden=true});
@@ -1329,8 +1329,12 @@ route_();fixImgs(document);
 /* cada minuto se actualiza «Hoy» durante el día del viaje */
 setInterval(()=>{if(!$("s-viaje").hidden&&!SIM&&phase().p==="day")$("nowbox").innerHTML=hoyBox()},60000);
 
+/* calles del casco guardadas de antemano (zoom 14 a 17), para que el mapa sirva sin señal */
+function preTiles(){try{if(LS("tiles")===3)return;const t=(la,lo,z)=>{const n=2**z,r=la*Math.PI/180;return[Math.floor((lo+180)/360*n),Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n)]};
+  const u=[];for(let z=14;z<=17;z++){const[a,b]=t(39.8655,-4.0345,z),[c,d]=t(39.8540,-4.0095,z);for(let x=a;x<=c;x++)for(let y=b;y<=d;y++)u.push(`https://${"abc"[(x+y)%3]}.tile.openstreetmap.org/${z}/${x}/${y}.png`)}
+  let i=0,ok=0;const next=()=>{if(i>=u.length){if(ok>u.length*.9)SS("tiles",3);return}fetch(u[i++],{mode:"cors"}).then(r=>{if(r.ok)ok++}).catch(()=>{}).finally(()=>setTimeout(next,150))};next()}catch(e){}}
 /* sin conexión: solo en la web publicada */
-if("serviceWorker" in navigator&&/github\.io$|pages\.dev$/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
+if("serviceWorker" in navigator&&/github\.io$|pages\.dev$/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").then(()=>navigator.serviceWorker.ready).then(()=>{if(navigator.onLine)setTimeout(preTiles,4000)}).catch(()=>{})}catch(e){}}
 }
 </script>
 <script>
