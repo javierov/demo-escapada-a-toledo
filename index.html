@@ -1141,6 +1141,27 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 /* créditos del mapa: obligatorios por la licencia, pero discretos */
 #mapw .leaflet-control-attribution{font-size:9.5px;line-height:1.3;padding:1px 6px;background:rgb(255 255 255/.55);color:#555;border-radius:6px 0 0 0}
 #mapw .leaflet-control-attribution a{color:#555}
+.bh .bim{width:64px;height:64px;flex:none;margin:-6px 4px -6px -4px;border-radius:50%;box-shadow:0 4px 12px rgb(0 0 0/.45)}
+@font-face{font-family:"Marcellus";src:url(fonts/marcellus.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+.bh.bhg{position:relative;isolation:isolate;font-family:"Marcellus",Georgia,serif;font-weight:400;font-size:24px;letter-spacing:0;color:#fff}
+.bh.bhg::before{content:"";position:absolute;z-index:-1;left:44px;right:-1px;top:50%;height:42px;transform:translateY(-50%);background:linear-gradient(180deg,#4a5a70,#3a4759);
+  clip-path:polygon(0 0,100% 0,calc(100% - 16px) 50%,100% 100%,0 100%);box-shadow:0 2px 6px rgb(0 0 0/.3)}
+.bh.bhg .bim{position:relative;z-index:1}
+/* lectura cómoda para quien ve poco: textos un poco más grandes y grises más claros, sin agrandar títulos */
+:root:not([data-theme]),:root[data-theme="noche"]{--soft:#c4cbd7;--mute:#9ba4b3}
+body{font-size:17px}
+.stx{font-size:16.5px!important;line-height:1.5}
+.det .list li,.list li{font-size:16px;line-height:1.45}
+.res small,#rincones small{font-size:15px;line-height:1.45}
+.res b{font-size:17px}
+.note{font-size:14.5px!important;line-height:1.45}
+.altg{font-size:15.5px}
+.hoy .hl3{font-size:17.5px}.hoy .hsub,.nxt{font-size:15.5px}
+.rtip,.wxt small{font-size:15px}
+.day .t small{font-size:14px}
+.res .ln,.res .ln span{font-size:14px}
+.chk span{font-size:16px}
+.top button{font-size:13.5px}
 </style>
 </head>
 <body>
@@ -1185,7 +1206,7 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 <section id="s-comer" hidden>
   <div class="ptl"><h1>Dónde comer</h1><p>Platos típicos, económicos y auténticos.</p></div>
   <div class="pad">
-    <div class="box blk"><h3 class="bh"><span class="bi"><i data-ic="food"></i></span>Qué pedir</h3><ul class="list" id="platos"></ul></div>
+    <div class="box blk"><h3 class="bh bhg" style="--g:url(fotos/comer/pedir.png)"><img class="bim" src="fotos/comer/pedir.png" alt="">Qué pedir</h3><ul class="list" id="platos"></ul></div>
     <div id="rlist"></div>
     <p class="note" style="margin-top:14px;font-size:13px">€ menos de 15 € por persona · €€ entre 15 y 25 €. Los horarios cambian: mejor mirarlos en Google Maps antes de ir.</p></div>
 </section>
@@ -1264,7 +1285,7 @@ const RN=[
 const LLUVIA=[["church","Si llueve fuerte, quizá valga la pena pagar algo a cubierto: la Catedral (12 €) es lo que más tiempo da."],["castle","Si llueve fuerte, cambia el Puente de San Martín y el mirador por el <b>Museo Sefardí</b>, en la Sinagoga del Tránsito, en la Judería: 3 €, de martes a sábado de 9:30 a 20:00."],["art","O por el <b>Museo de Santa Cruz</b>, al lado de Zocodover, con cuadros del Greco: 5 €, de lunes a sábado de 10:00 a 18:00."],["train","Para terminar, pide el taxi directo a la estación: con lluvia la vista del mirador se pierde."],["umb","Lleva un paraguas plegable y calzado que no resbale."]];
 /* tiempo: previsión guardada (se actualiza sola con internet) */
 const WX0={at:"2026-11-19T18:30",d:[3,14,10,5],h:{10:[3,11,0],12:[3,13,3],14:[3,14,0],16:[3,14,0]}};
-const RT={tipico:["Cocina toledana","food"],tapas:["Tapas y raciones","moon"],dulce:["Dulces","cake"]};
+const RT={tipico:["Cocina toledana","food","toledana"],tapas:["Tapas y raciones","moon","tapas"],dulce:["Dulces","cake","dulces"]};
 /* dónde comer: nombre, tipo, precio, nota, búsqueda, zona, lat, lon */
 const R=[
  ["Bar Ludeña","tipico","€","Taberna de toda la vida donde nacieron las carcamusas, el plato más típico de Toledo. También perdiz y sopa castellana.","Bar Ludeña Plaza de la Magdalena 10 Toledo","Plaza de la Magdalena",39.85873,-4.02201],
@@ -1380,7 +1401,7 @@ function openStop(i){const el=$("st"+i);if(!el)return;el.classList.add("open");e
 /* ---------- dónde comer ---------- */
 function renderR(){
   $("platos").innerHTML=PLATOS.map(([i,tx])=>`<li><span class="ic">${ico(i)}</span><span>${tx}</span></li>`).join("");
-  $("rlist").innerHTML=Object.entries(RT).map(([k,[l,ic]])=>{const its=R.map((r,i)=>[r,i]).filter(([r])=>r[1]===k);return its.length?`<div class="box blk"><h3 class="bh"><span class="bi">${ico(ic,2)}</span>${l}</h3><ul class="res">${its.map(([[n,,pr,nt,q,zo],i])=>`<li><div class="rw2"><span><b>${esc(n)}</b><span class="ln"><span class="pr">${pr}</span><span>${esc(zo)}</span></span><small>${esc(nt)}</small><span class="ln" style="margin-top:4px"><button type="button" class="lkb" data-pt="c${i}">Ver en el mapa</button></span></span><a class="go" href="${map(q)}" target="_blank" rel="noopener" aria-label="Abrir ${esc(n)} en Google Maps">${ico("pin",2)}</a></div></li>`).join("")}</ul></div>`:""}).join("")}
+  $("rlist").innerHTML=Object.entries(RT).map(([k,[l,ic,im]])=>{const its=R.map((r,i)=>[r,i]).filter(([r])=>r[1]===k);return its.length?`<div class="box blk"><h3 class="bh bhg" style="--g:url(fotos/comer/${im}.png)"><img class="bim" src="fotos/comer/${im}.png" alt="">${l}</h3><ul class="res">${its.map(([[n,,pr,nt,q,zo],i])=>`<li><div class="rw2"><span><b>${esc(n)}</b><span class="ln"><span class="pr">${pr}</span><span>${esc(zo)}</span></span><small>${esc(nt)}</small><span class="ln" style="margin-top:4px"><button type="button" class="lkb" data-pt="c${i}">Ver en el mapa</button></span></span><a class="go" href="${map(q)}" target="_blank" rel="noopener" aria-label="Abrir ${esc(n)} en Google Maps">${ico("pin",2)}</a></div></li>`).join("")}</ul></div>`:""}).join("")}
 
 /* ---------- mapa (Leaflet + OpenStreetMap) ---------- */
 let LM=null,LG=null,mk="all",tilesOk=false,MK={};
