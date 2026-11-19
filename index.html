@@ -1128,9 +1128,9 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 .me .dot{position:absolute;left:15px;top:15px;width:14px;height:14px;border-radius:50%;background:#2f80ff;border:2.5px solid #fff;box-shadow:0 1px 4px rgb(0 0 0/.35)}
 .me .dot::after{content:"";position:absolute;inset:-9px;border-radius:50%;background:rgb(47 128 255/.25);animation:mepu 2.4s ease-out infinite;z-index:-1}
 @keyframes mepu{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.6);opacity:0}}
-.me .merot{position:absolute;left:-28px;top:-28px;width:100px;height:100px;transition:transform .3s ease-out;opacity:0}
-.me.hd .merot{opacity:1}
-.me .cone{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from -28deg,rgb(47 128 255/.55),rgb(47 128 255/0) 56deg,rgb(47 128 255/0) 304deg,rgb(47 128 255/.55));-webkit-mask:radial-gradient(circle,#000 18%,rgb(0 0 0/.6) 40%,transparent 70%);mask:radial-gradient(circle,#000 18%,rgb(0 0 0/.6) 40%,transparent 70%)}
+.me .merot{position:absolute;inset:0;transition:transform .3s ease-out;opacity:0}
+.me.hd .merot{opacity:1}.me.hd .dot{opacity:0}
+.me .arw{width:44px;height:44px;display:block;filter:drop-shadow(0 1px 3px rgb(0 0 0/.4))}
 @media (prefers-reduced-motion:reduce){.me .dot::after{animation:none}}
 .memsg{top:auto;bottom:34px;cursor:pointer}
 /* créditos del mapa: obligatorios por la licencia, pero discretos */
@@ -1394,7 +1394,7 @@ function initMap(){if(LM||!window.L)return;
 const PC={r:"#3f6fd8",c:"#d9822b",n:"#2f9e6e"};
 /* ---------- «Dónde estoy»: punto azul con GPS y flecha con la brújula (funciona sin internet) ---------- */
 let ME=null,MEACC=null,WID=null,meOn=false,meFirst=true,HEAD=null,meRot=0;
-function meIcon(){return L.divIcon({className:"mepin",html:'<div class="me"><div class="merot"><i class="cone"></i></div><b class="dot"></b></div>',iconSize:[44,44],iconAnchor:[22,22]})}
+function meIcon(){return L.divIcon({className:"mepin",html:'<div class="me"><b class="dot"></b><div class="merot"><svg class="arw" viewBox="0 0 44 44"><path d="M22 5 34 36 22 29 10 36Z" fill="#7cc0ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div></div>',iconSize:[44,44],iconAnchor:[22,22]})}
 function setHead(h){if(h==null||isNaN(h))return;HEAD=h;const el=document.querySelector(".mepin .merot");if(!el)return;
   let d=((h-meRot)%360+540)%360-180;meRot+=d;el.style.transform=`rotate(${meRot}deg)`;el.parentNode.classList.add("hd")}
 function onOri(e){let h=null;if(typeof e.webkitCompassHeading==="number")h=e.webkitCompassHeading;else if(e.absolute&&e.alpha!=null)h=360-e.alpha;
