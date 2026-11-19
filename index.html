@@ -1107,6 +1107,21 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 .wxh svg{width:22px;height:22px;color:var(--steel2)}.wxh b{font-size:15px}.wxh small{font-size:11.5px;color:var(--soft)}
 #rincones li .ln span{color:var(--steel2);font-weight:600;font-size:12.5px}
 .mapbox .chips{gap:5px}.mapbox .chips button{padding:6px 10px;font-size:13px}
+/* rincones secretos: foto vista por el ojo de una cerradura; al tocarla se abre */
+#rincones li.rnf{display:grid;grid-template-columns:86px minmax(0,1fr);gap:12px;align-items:start}
+.kh{position:relative;width:86px;height:86px;margin-top:4px;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;
+  background:radial-gradient(circle at 50% 42%,rgb(255 255 255/.06),transparent 60%),linear-gradient(160deg,#3a2a1e,#1b130d);box-shadow:inset 0 0 0 1px rgb(255 255 255/.05),inset 0 6px 14px rgb(0 0 0/.5)}
+.kh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.25);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='40' r='15'/%3E%3Cpath d='M43 48 37 76h26l-6-28z'/%3E%3C/svg%3E") center/62% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='40' r='15'/%3E%3Cpath d='M43 48 37 76h26l-6-28z'/%3E%3C/svg%3E") center/62% no-repeat;
+  transition:-webkit-mask-size 1.1s cubic-bezier(.65,0,.25,1),mask-size 1.1s cubic-bezier(.65,0,.25,1),transform 1.4s ease}
+.kh::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 18px rgb(0 0 0/.65);pointer-events:none;transition:opacity .9s}
+.kh .khh{position:absolute;left:0;right:0;bottom:5px;text-align:center;font-size:10.5px;font-weight:700;color:#f3e6d4;text-shadow:0 1px 2px #000;transition:opacity .4s}
+.kh.open img{-webkit-mask-size:1100%;mask-size:1100%;transform:scale(1)}
+.kh.open::after,.kh.open .khh{opacity:0}
+.kh:not(.open) img{animation:khp 3.2s ease-in-out infinite}
+@keyframes khp{50%{transform:scale(1.32) translateX(-3%)}}
+@media (prefers-reduced-motion:reduce){.kh img{transition:none;animation:none!important}}
+#rincones .rnf .go{display:none}#rincones .rnf .rw2{grid-template-columns:minmax(0,1fr)}#rincones .rnf .ln:last-child{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}#rincones a.lkb{text-decoration:none;margin:0}
 </style>
 </head>
 <body>
@@ -1212,10 +1227,10 @@ const ST=[
 const RN=[
  ["La ventana más pequeña del mundo","En la calle Sillería, en el Casón de los López: según el Guinness, es la ventana más pequeña del mundo. Hay que buscarla con calma.",2,39.86,-4.02214,"Calle Sillería Toledo"],
  ["Calle del Hombre de Palo","Cuenta la leyenda que por esta calle, junto a la Catedral, caminaba un muñeco de madera que construyó el relojero Juanelo Turriano.",3,39.85736,-4.02364,"Calle del Hombre de Palo Toledo"],
- ["Mirador del Paseo del Tránsito","Un balcón sobre el río Tajo frente a la Sinagoga del Tránsito. Poca gente y muy buenas vistas.",5,39.85542,-4.02909,"Paseo del Tránsito Toledo"],
- ["Los azulejos de la Judería","Más de 500 azulejos azules y blancos en el suelo y las fachadas marcan las calles del antiguo barrio judío. Ve fijándote mientras caminas.",6,39.85669,-4.03061,"Calle de los Reyes Católicos Toledo"],
+ ["Mirador del Paseo del Tránsito","Un balcón sobre el río Tajo frente a la Sinagoga del Tránsito. Poca gente y muy buenas vistas.",5,39.85542,-4.02909,"Paseo del Tránsito Toledo","mirador"],
+ ["Los azulejos de la Judería","Más de 500 azulejos azules y blancos en el suelo y las fachadas marcan las calles del antiguo barrio judío. Ve fijándote mientras caminas.",6,39.85669,-4.03061,"Calle de los Reyes Católicos Toledo","azulejos"],
  ["Las placas «Esta calle es de Toledo»","Algunos callejones se cerraron con portales durante siglos; estas placas de cerámica recuerdan que la calle es de la ciudad. Hay varias por la calle de la Plata.",9,39.85923,-4.02305,"Calle de la Plata Toledo"],
- ["Cobertizo de Santo Domingo el Real","Un cobertizo es un pasadizo bajo las casas, como un túnel en la calle. En la Edad Media había decenas; hoy quedan pocos. Está a 5 minutos de San Vicente.",9,39.86055,-4.02571,"Cobertizo de Santo Domingo el Real Toledo"]];
+ ["Cobertizo de Santo Domingo el Real","Un cobertizo es un pasadizo bajo las casas, como un túnel en la calle. En la Edad Media había decenas; hoy quedan pocos. Está a 5 minutos de San Vicente.",9,39.86055,-4.02571,"Cobertizo de Santo Domingo el Real Toledo","cobertizo"]];
 /* plan B si llueve */
 const LLUVIA=[["church","La Catedral está toda a cubierto: si llueve, quédate más rato en la sacristía, el coro y el museo."],["castle","Cambia el paseo de las 15:45 por el <b>Museo Sefardí</b>, en la Sinagoga del Tránsito, en la Judería: 3 €, de martes a sábado de 9:30 a 20:00."],["art","O por el <b>Museo de Santa Cruz</b>, al lado de Zocodover, con cuadros del Greco: 5 €, de lunes a sábado de 10:00 a 18:00."],["train","Para bajar a la estación, mejor el bus L5, L61 o L62 desde Zocodover, o un taxi: la piedra mojada resbala."],["umb","Lleva un paraguas plegable y calzado que no resbale."]];
 /* tiempo: previsión guardada (se actualiza sola con internet) */
@@ -1318,10 +1333,12 @@ function renderHome(){const f=phase(),k=f.p==="day"&&f.t.m<17*60+30?curIdx(f.t.m
   const done=LS("tareas")||{};
   $("tareas").innerHTML=TAREAS.map(([k2,tx])=>`<label class="chk"><input type="checkbox" data-t="${k2}"${done[k2]?" checked":""}><span>${esc(tx)}</span></label>`).join("");
   renderWx();
-  $("rincones").innerHTML=RN.map(([n,t,k,,,q],i)=>`<li><div class="rw2"><span><b>${esc(n)}</b><span class="ln"><span>Cerca de la parada ${k}: ${esc(ST[k-1].n)}</span></span><small>${esc(t)}</small><span class="ln" style="margin-top:4px"><button type="button" class="lkb" data-pt="n${i}">Ver en el mapa</button></span></span><a class="go" href="${map(q)}" target="_blank" rel="noopener" aria-label="Abrir ${esc(n)} en Google Maps">${ico("pin",2)}</a></div></li>`).join("");
+  const RV=LS("rv")||{};
+  $("rincones").innerHTML=RN.map(([n,t,k,,,q,f],i)=>`<li${f?' class="rnf"':''}>${f?`<button type="button" class="kh${RV[f]?" open":""}" data-kh="${f}" aria-label="${RV[f]?"Foto de "+esc(n):"Mirar por la cerradura: "+esc(n)}"><img src="fotos/rincones/${f}.jpg" alt=""><span class="khh">Toca para mirar</span></button>`:""}<div class="rw2"><span><b>${esc(n)}</b><span class="ln"><span>Cerca de la parada ${k}: ${esc(ST[k-1].n)}</span></span><small>${esc(t)}</small><span class="ln" style="margin-top:4px"><button type="button" class="lkb" data-pt="n${i}">Ver en el mapa</button>${f?`<a class="lkb" href="${map(q)}" target="_blank" rel="noopener">Google Maps</a>`:""}</span></span><a class="go" href="${map(q)}" target="_blank" rel="noopener" aria-label="Abrir ${esc(n)} en Google Maps">${ico("pin",2)}</a></div></li>`).join("");
   $("lluv").innerHTML=LLUVIA.map(([i,tx])=>`<li><span class="ic">${ico(i)}</span><span>${tx}</span></li>`).join("");
   $("tren").innerHTML=TREN.map(([i,tx])=>`<li><span class="ic">${ico(i)}</span><span>${tx}</span></li>`).join("");
   fixImgs(document)}
+$("rincones").addEventListener("click",e=>{const b=e.target.closest("[data-kh]");if(!b||b.classList.contains("open"))return;b.classList.add("open");const d=LS("rv")||{};d[b.dataset.kh]=1;SS("rv",d)});
 $("tareas").addEventListener("change",e=>{const c=e.target.closest("[data-t]");if(!c)return;const d=LS("tareas")||{};d[c.dataset.t]=c.checked;SS("tareas",d)});
 $("route").addEventListener("click",e=>{const h=e.target.closest(".dh");if(h){const a=h.parentNode;a.classList.toggle("open");h.setAttribute("aria-expanded",a.classList.contains("open"));fixImgs(a)}});
 function openStop(i){const el=$("st"+i);if(!el)return;el.classList.add("open");el.querySelector(".dh").setAttribute("aria-expanded","true");fixImgs(el);setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),60)}
