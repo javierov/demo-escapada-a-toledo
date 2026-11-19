@@ -1,5 +1,5 @@
 /* Escapada a Toledo: guarda la app en el móvil para usarla sin internet */
-const V = "et-escapada-toledo-v6", T = "et-escapada-toledo-mapa"; /* solo borra sus propias copias: en github.io todas las apps comparten el mismo sitio */
+const V = "et-escapada-toledo-v7", T = "et-escapada-toledo-mapa"; /* solo borra sus propias copias: en github.io todas las apps comparten el mismo sitio */
 const FILES = ["./", "index.html", "manifest.json", "icono.png", "icono-192.png", "favicon-32.png", "apple-touch-icon.png",
   "fotos/panorama.jpg", "fotos/catedral.jpg", "fotos/juderia.jpg"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => Promise.allSettled(FILES.map(f => fetch(new Request(f, { cache: "reload" })).then(r => { if (r.ok) return c.put(f, r); })))).then(() => self.skipWaiting())); });
