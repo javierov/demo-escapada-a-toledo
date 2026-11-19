@@ -1341,7 +1341,9 @@ function renderHome(){const f=phase(),k=f.p==="day"&&f.t.m<17*60+30?curIdx(f.t.m
 $("rincones").addEventListener("click",e=>{const b=e.target.closest("[data-kh]");if(!b||b.classList.contains("open"))return;b.classList.add("open");const d=LS("rv")||{};d[b.dataset.kh]=1;SS("rv",d)});
 $("tareas").addEventListener("change",e=>{const c=e.target.closest("[data-t]");if(!c)return;const d=LS("tareas")||{};d[c.dataset.t]=c.checked;SS("tareas",d)});
 $("route").addEventListener("click",e=>{const h=e.target.closest(".dh");if(h){const a=h.parentNode;a.classList.toggle("open");h.setAttribute("aria-expanded",a.classList.contains("open"));fixImgs(a)}});
-function openStop(i){const el=$("st"+i);if(!el)return;el.classList.add("open");el.querySelector(".dh").setAttribute("aria-expanded","true");fixImgs(el);setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),60)}
+/* desplazamiento seguro: suave si se puede y, si el navegador no se mueve, directo */
+function goTo(el,off){if(!el)return;const y=Math.max(0,Math.round(el.getBoundingClientRect().top+scrollY-(off==null?72:off)));try{window.scrollTo({top:y,behavior:"smooth"})}catch(e){window.scrollTo(0,y)}setTimeout(()=>{if(Math.abs(scrollY-y)>30)window.scrollTo(0,y)},700)}
+function openStop(i){const el=$("st"+i);if(!el)return;el.classList.add("open");el.querySelector(".dh").setAttribute("aria-expanded","true");fixImgs(el);setTimeout(()=>goTo(el),60)}
 
 /* ---------- dónde comer ---------- */
 function renderR(){
@@ -1382,11 +1384,11 @@ $("mapchips").onclick=e=>{const b=e.target.closest("[data-mk]");if(!b)return;mk=
 let pendStop=null,pendPt=null,pendJump=null;
 const go=h=>{if(location.hash.slice(1)===h)route_();else location.hash=h};
 document.addEventListener("click",e=>{
-  const s=e.target.closest("[data-stop]");if(s){pendStop=+s.dataset.stop;LM&&LM.closePopup();go("");return}
+  const s=e.target.closest("[data-stop]");if(s){const k=+s.dataset.stop;LM&&LM.closePopup();if(!$("s-viaje").hidden){openStop(k);return}pendStop=k;go("");return}
   const m2=e.target.closest("[data-mk2]");if(m2){mk=m2.dataset.mk2;go("mapa");return}
   const j2=e.target.closest("[data-jump2]");if(j2){LM&&LM.closePopup();pendJump=j2.dataset.jump2;go("");return}
   const p=e.target.closest("[data-pt]");if(p){const id=p.dataset.pt;if(mk!=="all"&&mk!==id[0])mk="all";pendPt=id;if(location.hash.slice(1)==="mapa"){drawMap(id);window.scrollTo({top:0,behavior:"smooth"})}else go("mapa");return}
-  const j=e.target.closest("[data-jump]");if(j){$(j.dataset.jump).scrollIntoView({behavior:"smooth",block:"start"});return}
+  const j=e.target.closest("[data-jump]");if(j){goTo($(j.dataset.jump));return}
   const g=e.target.closest("[data-go]");if(g&&g.tagName==="BUTTON"){LM&&LM.closePopup();go(g.dataset.go)}});
 function show(id){document.querySelectorAll(".app>section").forEach(s=>s.hidden=s.id!=="s-"+id);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===(id==="viaje"?"":id)?"true":"false"))}
 function route_(){
@@ -1394,7 +1396,7 @@ function route_(){
   const m=h.match(/^prueba-(\d+)(?:-(\d{1,2})(\d{2})?)?$/);
   if(m){SIM={y:Y,mo:M,d:+m[1],m:(m[2]!==undefined?+m[2]:9)*60+(m[3]?+m[3]:0)};try{sessionStorage.setItem("et-sim",JSON.stringify(SIM))}catch(e){}history.replaceState(null,"",location.pathname+location.search);h=""}
   const id=["mapa","comer"].includes(h)?h:"viaje";show(id);
-  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else if(pendJump){const el=$(pendJump);pendJump=null;setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),80)}else window.scrollTo({top:0});requestAnimationFrame(()=>{window.etFitTitle&&window.etFitTitle();fitCar()});document.fonts&&document.fonts.ready.then(fitCar)}
+  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else if(pendJump){const el=$(pendJump);pendJump=null;setTimeout(()=>goTo(el,140),80)}else window.scrollTo({top:0});requestAnimationFrame(()=>{window.etFitTitle&&window.etFitTitle();fitCar()});document.fonts&&document.fonts.ready.then(fitCar)}
   if(id==="comer"){renderR();window.scrollTo({top:0})}
   if(id==="mapa"){window.scrollTo({top:0});drawMap(pendPt);pendPt=null}}
 window.addEventListener("hashchange",route_);
