@@ -1099,12 +1099,12 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.bnr .trn{animation:none;transform:translateX(12px)}}
 .cn{top:6px;font-size:44px}
 .thx,.tha{display:grid;place-items:center;padding:0;line-height:0}.thx svg,.tha svg{display:block}
-.wxt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.wxt{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:center}.wxi{width:58px;height:58px;object-fit:contain}
 .wxn{font-size:46px;font-weight:300;letter-spacing:-.04em;line-height:1;color:var(--steel2)}
 .wxt b{display:block;font-size:16px}.wxt small{display:block;color:var(--soft);font-size:13.5px}
 .wxh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
 .wxh span{display:grid;justify-items:center;gap:2px;border:1px solid var(--line);border-radius:14px;padding:7px 2px;text-align:center}
-.wxh svg{width:22px;height:22px;color:var(--steel2)}.wxh b{font-size:15px}.wxh small{font-size:11.5px;color:var(--soft)}
+.wxhi{width:30px;height:30px;object-fit:contain}.wxh b{font-size:15px}.wxh small{font-size:11.5px;color:var(--soft)}
 #rincones li .ln span{color:var(--steel2);font-weight:600;font-size:12.5px}
 .mapbox .chips{gap:5px}.mapbox .chips button{padding:6px 10px;font-size:13px}
 /* rincones secretos: foto vista por el ojo de una cerradura; al tocarla se abre */
@@ -1114,6 +1114,7 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 @keyframes khi{0%{transform:scale(1)}100%{transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){.kh,.kh img{animation:none}}
 
+.wxr{display:grid;grid-template-columns:40px 40px minmax(0,1fr);gap:6px;align-items:center;margin-top:12px;font-size:14.5px;line-height:1.4}.wxr img{width:40px;height:40px;object-fit:contain}
 </style>
 </head>
 <body>
@@ -1300,6 +1301,8 @@ function hoyBox(){const f=phase(),h=Math.floor(f.t.m/60);
     <div class="acts"><button class="btn" type="button" data-stop="${k}">Ver detalles</button>${s.q?`<a class="btn ghost" style="display:inline-grid;place-items:center;text-decoration:none" href="${map(s.q)}" target="_blank" rel="noopener">Cómo llegar</a>`:""}</div></div>`}
 
 /* ---------- tiempo del viernes (Open-Meteo) ---------- */
+const WIMG=c=>c===0?"sol":c<=2?"solnube":c<=48?"nubes":c<=67?"lluvia":c<=82?"lluvia":c<=86?"nubes":"tormenta";
+const wim=(c,cl)=>`<img class="${cl}" src="fotos/tiempo/${WIMG(c)}.png" alt="">`;
 const WMO=c=>c===0?["sunny","Despejado"]:c<=2?["psun","Algo nuboso"]:c===3?["cloud","Nublado"]:c<=48?["fog","Niebla"]:c<=57?["rain","Llovizna"]:c<=67?["rain","Lluvia"]:c<=77?["cloud","Nieve"]:c<=82?["rain","Chubascos"]:c<=86?["cloud","Nieve"]:["rain","Tormenta"];
 let WX=LS("wx")||WX0;
 function ropa(w){const p=[];p.push(w[2]<=6?"Abrigo de invierno, bufanda y guantes para la mañana":w[1]<=15?"Chaqueta abrigada y ropa en capas":"Chaqueta ligera y ropa en capas");
@@ -1307,9 +1310,9 @@ function ropa(w){const p=[];p.push(w[2]<=6?"Abrigo de invierno, bufanda y guante
 function renderWx(){const w=WX.d,[ic,tx]=WMO(w[0]),hh=Object.entries(WX.h);
   const at=new Date(WX.at),hm=`${String(at.getHours()).padStart(2,"0")}:${String(at.getMinutes()).padStart(2,"0")}`;
   $("wxbox").innerHTML=`<h3 class="bh"><span class="bi">${ico(ic,2)}</span>El tiempo del viernes</h3>
-  <div class="wxt"><span class="wxn">${w[1]}°</span><span><b>${tx}</b><small>Máxima ${w[1]}° · mínima ${w[2]}°${w[3]!=null?` · lluvia ${w[3]}%`:""}</small></span></div>
-  <div class="wxh">${hh.map(([h,[c,t,pp]])=>`<span><small>${h}:00</small>${ico(WMO(c)[0],1.7)}<b>${t}°</b>${pp>=20?`<small>${pp}%</small>`:""}</span>`).join("")}</div>
-  <p class="rtip">${ico("shirt",2)}<span>${ropa(w)}</span></p>${w[3]>=40?`<p class="rtip">${ico("umb",2)}<span>Puede llover: mira «Si llueve», más abajo.</span></p>`:""}
+  <div class="wxt">${wim(w[0],"wxi")}<span class="wxn">${w[1]}°</span><span><b>${tx}</b><small>Máxima ${w[1]}° · mínima ${w[2]}°${w[3]!=null?` · lluvia ${w[3]}%`:""}</small></span></div>
+  <div class="wxh">${hh.map(([h,[c,t,pp]])=>`<span><small>${h}:00</small>${wim(c,"wxhi")}<b>${t}°</b>${pp>=20?`<small>${pp}%</small>`:""}</span>`).join("")}</div>
+  <div class="wxr"><img src="fotos/tiempo/impermeable.png" alt=""><img src="fotos/tiempo/zapatillas.png" alt=""><span>${ropa(w)}</span></div>${w[3]>=40?`<p class="rtip">${ico("umb",2)}<span>Puede llover: mira «Si llueve», más abajo.</span></p>`:""}
   <p class="note" style="font-size:12.5px;margin-top:8px">Previsión de Open-Meteo, actualizada el ${at.getDate()} a las ${hm}.</p>`}
 async function loadWx(){if(LS("wx")&&Date.now()-new Date(LS("wx").at).getTime()<3600e3)return;
   try{const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=39.8628&longitude=-4.0273&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=temperature_2m,precipitation_probability,weather_code&timezone=Europe%2FMadrid&start_date=2026-11-20&end_date=2026-11-20");
