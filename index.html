@@ -1099,6 +1099,14 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.bnr .trn{animation:none;transform:translateX(12px)}}
 .cn{top:6px;font-size:44px}
 .thx,.tha{display:grid;place-items:center;padding:0;line-height:0}.thx svg,.tha svg{display:block}
+.wxt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.wxn{font-size:46px;font-weight:300;letter-spacing:-.04em;line-height:1;color:var(--steel2)}
+.wxt b{display:block;font-size:16px}.wxt small{display:block;color:var(--soft);font-size:13.5px}
+.wxh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
+.wxh span{display:grid;justify-items:center;gap:2px;border:1px solid var(--line);border-radius:14px;padding:7px 2px;text-align:center}
+.wxh svg{width:22px;height:22px;color:var(--steel2)}.wxh b{font-size:15px}.wxh small{font-size:11.5px;color:var(--soft)}
+#rincones li .ln span{color:var(--steel2);font-weight:600;font-size:12.5px}
+.mapbox .chips{gap:5px}.mapbox .chips button{padding:6px 10px;font-size:13px}
 </style>
 </head>
 <body>
@@ -1119,8 +1127,12 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
   <div class="dots" id="dots" aria-hidden="true"></div>
   <div class="pad" id="nowbox"></div>
   <div class="pad">
+    <div class="box blk wxb" id="wxbox"></div>
     <h2><span>Tu ruta del día</span><button type="button" data-go="mapa">Ver mapa</button></h2>
     <div id="route"></div>
+    <h2><span>Rincones secretos</span><button type="button" data-mk2="n">Ver en el mapa</button></h2>
+    <div class="box"><ul class="res" id="rincones"></ul></div>
+    <div class="box blk" id="lluvia"><h3 class="bh"><span class="bi"><i data-ic="umb"></i></span>Si llueve</h3><ul class="list" id="lluv"></ul></div>
     <div class="box blk" id="antes"><h3 class="bh"><span class="bi"><i data-ic="case"></i></span>Antes de ir</h3><div id="tareas"></div></div>
     <div class="box blk"><h3 class="bh"><span class="bi"><i data-ic="train"></i></span>El tren</h3><ul class="list" id="tren"></ul></div>
   </div>
@@ -1196,6 +1208,18 @@ const ST=[
  {h:"16:45",m:1005,n:"Bajada a la estación",ic:"train",la:39.86038,lo:-4.01747,q:"Puente de Alcántara Toledo",
   t:"Baja andando hacia el Puente de Alcántara, el puente romano, crúzalo y en 5 minutos más estás en la estación, con tiempo de sobra para el tren de las 17:30. Son unos 20 minutos, todo cuesta abajo (hay escaleras mecánicas si prefieres no bajar cuestas).",
   tip:"Si vas justa de tiempo, desde Zocodover salen el bus L5, L61 y L62 a la estación (unos 15 min), o un taxi.",dur:"20 min"}];
+/* rincones secretos: nombre, qué es, parada cercana, lat, lon, búsqueda */
+const RN=[
+ ["La ventana más pequeña del mundo","En la calle Sillería, en el Casón de los López: según el Guinness, es la ventana más pequeña del mundo. Hay que buscarla con calma.",2,39.86,-4.02214,"Calle Sillería Toledo"],
+ ["Calle del Hombre de Palo","Cuenta la leyenda que por esta calle, junto a la Catedral, caminaba un muñeco de madera que construyó el relojero Juanelo Turriano.",3,39.85736,-4.02364,"Calle del Hombre de Palo Toledo"],
+ ["Mirador del Paseo del Tránsito","Un balcón sobre el río Tajo frente a la Sinagoga del Tránsito. Poca gente y muy buenas vistas.",5,39.85542,-4.02909,"Paseo del Tránsito Toledo"],
+ ["Los azulejos de la Judería","Más de 500 azulejos azules y blancos en el suelo y las fachadas marcan las calles del antiguo barrio judío. Ve fijándote mientras caminas.",6,39.85669,-4.03061,"Calle de los Reyes Católicos Toledo"],
+ ["Las placas «Esta calle es de Toledo»","Algunos callejones se cerraron con portales durante siglos; estas placas de cerámica recuerdan que la calle es de la ciudad. Hay varias por la calle de la Plata.",9,39.85923,-4.02305,"Calle de la Plata Toledo"],
+ ["Cobertizo de Santo Domingo el Real","Un cobertizo es un pasadizo bajo las casas, como un túnel en la calle. En la Edad Media había decenas; hoy quedan pocos. Está a 5 minutos de San Vicente.",9,39.86055,-4.02571,"Cobertizo de Santo Domingo el Real Toledo"]];
+/* plan B si llueve */
+const LLUVIA=[["church","La Catedral está toda a cubierto: si llueve, quédate más rato en la sacristía, el coro y el museo."],["castle","Cambia el paseo de las 15:45 por el <b>Museo Sefardí</b>, en la Sinagoga del Tránsito, en la Judería: 3 €, de martes a sábado de 9:30 a 20:00."],["art","O por el <b>Museo de Santa Cruz</b>, al lado de Zocodover, con cuadros del Greco: 5 €, de lunes a sábado de 10:00 a 18:00."],["train","Para bajar a la estación, mejor el bus L5, L61 o L62 desde Zocodover, o un taxi: la piedra mojada resbala."],["umb","Lleva un paraguas plegable y calzado que no resbale."]];
+/* tiempo: previsión guardada (se actualiza sola con internet) */
+const WX0={at:"2026-11-19T18:30",d:[3,14,10,5],h:{10:[3,11,0],12:[3,13,3],14:[3,14,0],16:[3,14,0]}};
 const RT={tipico:["Cocina toledana","food"],tapas:["Tapas y raciones","moon"],dulce:["Dulces","cake"]};
 /* dónde comer: nombre, tipo, precio, nota, búsqueda, zona, lat, lon */
 const R=[
@@ -1263,6 +1287,25 @@ function hoyBox(){const f=phase(),h=Math.floor(f.t.m/60);
     ${nx?`<p class="nxt"><b>A las ${nx.h}:</b> ${esc(nx.n)}</p>`:`<p class="nxt"><b>Tu tren sale a las 17:30.</b> Llega a la estación unos 15 minutos antes.</p>`}
     <div class="acts"><button class="btn" type="button" data-stop="${k}">Ver detalles</button>${s.q?`<a class="btn ghost" style="display:inline-grid;place-items:center;text-decoration:none" href="${map(s.q)}" target="_blank" rel="noopener">Cómo llegar</a>`:""}</div></div>`}
 
+/* ---------- tiempo del viernes (Open-Meteo) ---------- */
+const WMO=c=>c===0?["sunny","Despejado"]:c<=2?["psun","Algo nuboso"]:c===3?["cloud","Nublado"]:c<=48?["fog","Niebla"]:c<=57?["rain","Llovizna"]:c<=67?["rain","Lluvia"]:c<=77?["cloud","Nieve"]:c<=82?["rain","Chubascos"]:c<=86?["cloud","Nieve"]:["rain","Tormenta"];
+let WX=LS("wx")||WX0;
+function ropa(w){const p=[];p.push(w[2]<=6?"Abrigo de invierno, bufanda y guantes para la mañana":w[1]<=15?"Chaqueta abrigada y ropa en capas":"Chaqueta ligera y ropa en capas");
+  if(w[3]>=50)p.push("paraguas plegable");else if(w[3]>=25)p.push("un paraguas pequeño por si acaso");p.push("calzado cómodo que no resbale");return p.join(", ")+"."}
+function renderWx(){const w=WX.d,[ic,tx]=WMO(w[0]),hh=Object.entries(WX.h);
+  const at=new Date(WX.at),hm=`${String(at.getHours()).padStart(2,"0")}:${String(at.getMinutes()).padStart(2,"0")}`;
+  $("wxbox").innerHTML=`<h3 class="bh"><span class="bi">${ico(ic,2)}</span>El tiempo del viernes</h3>
+  <div class="wxt"><span class="wxn">${w[1]}°</span><span><b>${tx}</b><small>Máxima ${w[1]}° · mínima ${w[2]}°${w[3]!=null?` · lluvia ${w[3]}%`:""}</small></span></div>
+  <div class="wxh">${hh.map(([h,[c,t,pp]])=>`<span><small>${h}:00</small>${ico(WMO(c)[0],1.7)}<b>${t}°</b>${pp>=20?`<small>${pp}%</small>`:""}</span>`).join("")}</div>
+  <p class="rtip">${ico("shirt",2)}<span>${ropa(w)}</span></p>${w[3]>=40?`<p class="rtip">${ico("umb",2)}<span>Puede llover: mira «Si llueve», más abajo.</span></p>`:""}
+  <p class="note" style="font-size:12.5px;margin-top:8px">Previsión de Open-Meteo, actualizada el ${at.getDate()} a las ${hm}.</p>`}
+async function loadWx(){if(LS("wx")&&Date.now()-new Date(LS("wx").at).getTime()<3600e3)return;
+  try{const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=39.8628&longitude=-4.0273&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=temperature_2m,precipitation_probability,weather_code&timezone=Europe%2FMadrid&start_date=2026-11-20&end_date=2026-11-20");
+    if(!r.ok)return;const j=await r.json(),d=j.daily,h={};
+    j.hourly.time.forEach((t,i)=>{const H=+t.slice(11,13);if([10,12,14,16].includes(H))h[H]=[j.hourly.weather_code[i],Math.round(j.hourly.temperature_2m[i]),j.hourly.precipitation_probability[i]]});
+    const n=new Date(),at=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}T${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
+    WX={at,d:[d.weather_code[0],Math.round(d.temperature_2m_max[0]),Math.round(d.temperature_2m_min[0]),d.precipitation_probability_max[0]],h};SS("wx",WX);if(!$("s-viaje").hidden)renderWx()}catch(e){}}
+
 /* ---------- ruta ---------- */
 function stopHTML(s,i,open,now){
   const ln=[s.pr&&`<li><span class="ic">${ico("ticket")}</span><span>${esc(s.pr)}</span></li>`,s.hr&&`<li><span class="ic">${ico("cal")}</span><span>${esc(s.hr)}</span></li>`,s.tip&&`<li><span class="ic">${ico("heart")}</span><span>${esc(s.tip)}</span></li>`].filter(Boolean).join("");
@@ -1274,6 +1317,9 @@ function renderHome(){const f=phase(),k=f.p==="day"&&f.t.m<17*60+30?curIdx(f.t.m
   $("route").innerHTML=ST.map((s,i)=>stopHTML(s,i,i===k,i===k)).join("");
   const done=LS("tareas")||{};
   $("tareas").innerHTML=TAREAS.map(([k2,tx])=>`<label class="chk"><input type="checkbox" data-t="${k2}"${done[k2]?" checked":""}><span>${esc(tx)}</span></label>`).join("");
+  renderWx();
+  $("rincones").innerHTML=RN.map(([n,t,k,,,q],i)=>`<li><div class="rw2"><span><b>${esc(n)}</b><span class="ln"><span>Cerca de la parada ${k}: ${esc(ST[k-1].n)}</span></span><small>${esc(t)}</small><span class="ln" style="margin-top:4px"><button type="button" class="lkb" data-pt="n${i}">Ver en el mapa</button></span></span><a class="go" href="${map(q)}" target="_blank" rel="noopener" aria-label="Abrir ${esc(n)} en Google Maps">${ico("pin",2)}</a></div></li>`).join("");
+  $("lluv").innerHTML=LLUVIA.map(([i,tx])=>`<li><span class="ic">${ico(i)}</span><span>${tx}</span></li>`).join("");
   $("tren").innerHTML=TREN.map(([i,tx])=>`<li><span class="ic">${ico(i)}</span><span>${tx}</span></li>`).join("");
   fixImgs(document)}
 $("tareas").addEventListener("change",e=>{const c=e.target.closest("[data-t]");if(!c)return;const d=LS("tareas")||{};d[c.dataset.t]=c.checked;SS("tareas",d)});
@@ -1298,28 +1344,31 @@ function initMap(){if(LM||!window.L)return;
   const mw=$("mapw"),stop=e=>{if(e.touches&&e.touches.length>1)e.preventDefault()};
   mw.addEventListener("touchstart",stop,{passive:false});mw.addEventListener("touchmove",stop,{passive:false});
   ["gesturestart","gesturechange","gestureend"].forEach(t=>mw.addEventListener(t,e=>e.preventDefault(),{passive:false}))}
-const PC={r:"#3f6fd8",c:"#d9822b"};
-function pts(){const a=[];if(mk!=="c")ST.forEach((s,i)=>{a.push({id:"r"+i,k:"r",n:s.n,la:s.la,lo:s.lo,lab:String(i+1),sub:`${s.h} · parada ${i+1}`,q:s.q,i})});
-  if(mk!=="r")R.forEach((r,i)=>a.push({id:"c"+i,k:"c",n:r[0],la:r[6],lo:r[7],lab:"",sub:r[5],q:r[4],i}));return a}
+const PC={r:"#3f6fd8",c:"#d9822b",n:"#2f9e6e"};
+function pts(){const a=[];if(mk==="all"||mk==="r")ST.forEach((s,i)=>{a.push({id:"r"+i,k:"r",n:s.n,la:s.la,lo:s.lo,lab:String(i+1),sub:`${s.h} · parada ${i+1}`,q:s.q,i})});
+  if(mk==="all"||mk==="c")R.forEach((r,i)=>a.push({id:"c"+i,k:"c",n:r[0],la:r[6],lo:r[7],lab:"",sub:r[5],q:r[4],i}));
+  if(mk==="all"||mk==="n")RN.forEach((r,i)=>a.push({id:"n"+i,k:"n",n:r[0],la:r[3],lo:r[4],lab:"★",sub:`Rincón secreto · cerca de la parada ${r[2]}`,q:r[5],i}));return a}
 function drawMap(focus){
-  $("mapchips").innerHTML=[["all","Todo"],["r","Ruta"],["c","Comer"]].map(([k,l])=>`<button type="button" data-mk="${k}" class="${mk===k?"on":""}">${l}</button>`).join("");
+  $("mapchips").innerHTML=[["all","Todo"],["r","Ruta"],["c","Comer"],["n","Rincones"]].map(([k,l])=>`<button type="button" data-mk="${k}" class="${mk===k?"on":""}">${l}</button>`).join("");
   const P2=pts();
   $("maplist").innerHTML=`<div class="box blk"><ul class="res">${P2.map(p=>`<li><div class="rw" data-pt="${p.id}"><span class="ic" style="color:#fff;background:${PC[p.k]};border-color:${PC[p.k]};font-weight:800;font-size:13px">${p.lab||ico("food",2.2)}</span><span><b>${esc(p.n)}</b><small>${esc(p.sub)}</small></span></div></li>`).join("")}</ul></div>`;
   if(!window.L){$("mapw").innerHTML=`<p class="note" style="padding:20px">El mapa no se pudo cargar.</p>`;return}
   requestAnimationFrame(()=>{initMap();LM.invalidateSize();LG.clearLayers();MK={};
-    if(mk!=="c")L.polyline(ST.map(s=>[s.la,s.lo]),{color:"#3f6fd8",weight:3,opacity:.7,dashArray:"6 7"}).addTo(LG);
+    if(mk==="all"||mk==="r")L.polyline(ST.map(s=>[s.la,s.lo]),{color:"#3f6fd8",weight:3,opacity:.7,dashArray:"6 7"}).addTo(LG);
     P2.forEach(p=>{MK[p.id]=L.marker([p.la,p.lo],{icon:L.divIcon({className:"lpin",html:`<span style="background:${PC[p.k]}">${p.lab||"<svg viewBox='0 0 24 24' width='14' height='14' fill='none' stroke='#fff' stroke-width='2.4' stroke-linecap='round'><path d='M7 3v18M5 3v5a2 2 0 0 0 4 0V3M17 21V3c-2 1-3 4-3 7h3'/></svg>"}</span>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14]}),title:p.n,riseOnHover:true,zIndexOffset:p.k==="r"?100:0})
-      .bindPopup(`<div class="lpop"><b>${esc(p.n)}</b><small>${esc(p.sub)}</small>${p.k==="r"?`<button type="button" class="btn" data-stop="${p.i}">Ver en la ruta</button>`:`<button type="button" class="btn" data-go="comer">Ver en Comer</button>`}<a class="lk" href="${map(p.q)}" target="_blank" rel="noopener">Ver en Google Maps</a></div>`,{maxWidth:240,autoPanPadding:[20,20]}).addTo(LG)});
+      .bindPopup(`<div class="lpop"><b>${esc(p.n)}</b><small>${esc(p.sub)}</small>${p.k==="r"?`<button type="button" class="btn" data-stop="${p.i}">Ver en la ruta</button>`:p.k==="c"?`<button type="button" class="btn" data-go="comer">Ver en Comer</button>`:`<button type="button" class="btn" data-jump2="rincones">Ver en la lista</button>`}<a class="lk" href="${map(p.q)}" target="_blank" rel="noopener">Ver en Google Maps</a></div>`,{maxWidth:240,autoPanPadding:[20,20]}).addTo(LG)});
     if(focus&&MK[focus]){LM.setView(MK[focus].getLatLng(),17);MK[focus].openPopup()}
     else if(P2.length){const B=P2.filter(p=>p.id!=="r0");LM.fitBounds((B.length?B:P2).map(p=>[p.la,p.lo]),{padding:[22,22],maxZoom:17})}})}
 $("mapchips").onclick=e=>{const b=e.target.closest("[data-mk]");if(!b)return;mk=b.dataset.mk;LM&&LM.closePopup();drawMap()};
 
 /* ---------- navegación ---------- */
-let pendStop=null,pendPt=null;
+let pendStop=null,pendPt=null,pendJump=null;
 const go=h=>{if(location.hash.slice(1)===h)route_();else location.hash=h};
 document.addEventListener("click",e=>{
   const s=e.target.closest("[data-stop]");if(s){pendStop=+s.dataset.stop;LM&&LM.closePopup();go("");return}
-  const p=e.target.closest("[data-pt]");if(p){const id=p.dataset.pt;if(id[0]==="c"&&mk==="r")mk="all";if(id[0]==="r"&&mk==="c")mk="all";pendPt=id;if(location.hash.slice(1)==="mapa"){drawMap(id);window.scrollTo({top:0,behavior:"smooth"})}else go("mapa");return}
+  const m2=e.target.closest("[data-mk2]");if(m2){mk=m2.dataset.mk2;go("mapa");return}
+  const j2=e.target.closest("[data-jump2]");if(j2){LM&&LM.closePopup();pendJump=j2.dataset.jump2;go("");return}
+  const p=e.target.closest("[data-pt]");if(p){const id=p.dataset.pt;if(mk!=="all"&&mk!==id[0])mk="all";pendPt=id;if(location.hash.slice(1)==="mapa"){drawMap(id);window.scrollTo({top:0,behavior:"smooth"})}else go("mapa");return}
   const j=e.target.closest("[data-jump]");if(j){$(j.dataset.jump).scrollIntoView({behavior:"smooth",block:"start"});return}
   const g=e.target.closest("[data-go]");if(g&&g.tagName==="BUTTON"){LM&&LM.closePopup();go(g.dataset.go)}});
 function show(id){document.querySelectorAll(".app>section").forEach(s=>s.hidden=s.id!=="s-"+id);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===(id==="viaje"?"":id)?"true":"false"))}
@@ -1328,12 +1377,12 @@ function route_(){
   const m=h.match(/^prueba-(\d+)(?:-(\d{1,2})(\d{2})?)?$/);
   if(m){SIM={y:Y,mo:M,d:+m[1],m:(m[2]!==undefined?+m[2]:9)*60+(m[3]?+m[3]:0)};try{sessionStorage.setItem("et-sim",JSON.stringify(SIM))}catch(e){}history.replaceState(null,"",location.pathname+location.search);h=""}
   const id=["mapa","comer"].includes(h)?h:"viaje";show(id);
-  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else window.scrollTo({top:0});requestAnimationFrame(()=>{window.etFitTitle&&window.etFitTitle();fitCar()});document.fonts&&document.fonts.ready.then(fitCar)}
+  if(id==="viaje"){renderHome();if(pendStop!==null){openStop(pendStop);pendStop=null}else if(pendJump){const el=$(pendJump);pendJump=null;setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),80)}else window.scrollTo({top:0});requestAnimationFrame(()=>{window.etFitTitle&&window.etFitTitle();fitCar()});document.fonts&&document.fonts.ready.then(fitCar)}
   if(id==="comer"){renderR();window.scrollTo({top:0})}
   if(id==="mapa"){window.scrollTo({top:0});drawMap(pendPt);pendPt=null}}
 window.addEventListener("hashchange",route_);
 document.querySelectorAll("[data-ic]").forEach(e=>e.outerHTML=ico(e.dataset.ic,2));
-route_();fixImgs(document);
+route_();fixImgs(document);loadWx();
 /* cada minuto se actualiza «Hoy» durante el día del viaje */
 setInterval(()=>{if(!$("s-viaje").hidden&&!SIM&&phase().p==="day")$("nowbox").innerHTML=hoyBox()},60000);
 
