@@ -1115,6 +1115,9 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.kh,.kh img{animation:none}}
 
 .wxr{display:grid;grid-template-columns:40px 40px minmax(0,1fr);gap:6px;align-items:center;margin-top:12px;font-size:14.5px;line-height:1.4}.wxr img{width:40px;height:40px;object-fit:contain}
+.opg{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.01em;color:#e7c07a;border:1px solid rgb(231 192 122/.45);border-radius:999px;padding:1px 7px;vertical-align:1px}
+.stp.opt .db{border-style:dashed}
+.altg{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;margin:0;padding:10px 12px;border-radius:12px;background:rgb(120 200 150/.08);border:1px solid rgb(120 200 150/.25);font-size:14.5px;line-height:1.45}.altg svg{width:20px;height:20px;color:#7fcf9e;margin-top:1px}
 </style>
 </head>
 <body>
@@ -1137,6 +1140,7 @@ a.btn{display:inline-grid;place-items:center;text-decoration:none}
   <div class="pad">
     <div class="box blk wxb" id="wxbox"></div>
     <h2><span>Tu ruta del día</span><button type="button" data-go="mapa">Ver mapa</button></h2>
+    <p class="note" style="margin:-4px 0 12px;font-size:13.5px">La ruta se puede hacer entera sin pagar entradas. Los lugares marcados <span class="opg">Opcional · de pago</span> se pueden ver por fuera; entrar es solo si les tinca.</p>
     <div id="route"></div>
     <h2><span>Rincones secretos</span><button type="button" data-mk2="n">Ver en el mapa</button></h2>
     <div class="box"><ul class="res" id="rincones"></ul></div>
@@ -1184,34 +1188,34 @@ const ST=[
  {h:"10:50",m:650,n:"Plaza de Zocodover",ic:"cup",la:39.85948,lo:-4.02142,q:"Plaza de Zocodover Toledo",
   t:"La plaza principal, con sus soportales y el Arco de la Sangre. Buen sitio para un café antes de empezar.",
   tip:"Rincón: muy cerca, en la calle Sillería, el Casón de los López tiene la ventana más pequeña del mundo, según el Guinness.",dur:"20 min"},
- {h:"11:05",m:665,n:"Catedral Primada",ic:"church",la:39.85663,lo:-4.02401,q:"Catedral Primada de Toledo",
+ {h:"11:05",m:665,n:"Catedral Primada",pay:1,alt:"Por fuera es gratis y ya vale la pena: rodéala por la Plaza del Ayuntamiento (la fachada principal), la Puerta del Reloj y la calle del Hombre de Palo. Unos 25 minutos.",ic:"church",la:39.85663,lo:-4.02401,q:"Catedral Primada de Toledo",
   t:"Gótica, enorme y llena de arte: el coro, la sacristía con cuadros del Greco y El Transparente, una ventana barroca abierta en el techo por la que entra la luz.",
   tip:"A esta hora casi no hay cola; desde las 12:30 llegan los grupos que vienen de Madrid. Se entra por la Puerta Llana y las entradas se compran en la tienda de enfrente o en catedralprimada.es.",
   pr:"Entrada completa: 12 €",hr:"Lunes a sábado de 10:00 a 18:30 (última entrada a las 18:00)",dur:"1 h 15 min",img:"catedral"},
- {h:"12:25",m:745,n:"Torres de la iglesia de los Jesuitas",ic:"church",la:39.85832,lo:-4.02623,q:"Iglesia de los Jesuitas San Ildefonso Toledo",
+ {h:"12:25",m:745,n:"Torres de la iglesia de los Jesuitas",pay:1,alt:"Gratis: la fachada barroca y su plaza, y seguir por la calle de la Plata y la Plaza de San Vicente, con las placas «Esta calle es de Toledo».",ic:"church",la:39.85832,lo:-4.02623,q:"Iglesia de los Jesuitas San Ildefonso Toledo",
   t:"Una iglesia barroca enorme con dos torres gemelas. Se sube a lo alto y hay una pasarela entre las dos torres: una de las mejores vistas de Toledo, con la Catedral enfrente.",
-  tip:"Compra aquí la pulsera turística (14 €): entra en los Jesuitas, Santo Tomé, Santa María la Blanca y San Juan de los Reyes, todo lo de hoy salvo la Catedral y el Museo del Greco. Sola, la entrada a los Jesuitas cuesta 4 €.",
+  tip:"Solo si quieren entrar a varios: la pulsera turística (14 €) sirve para los Jesuitas, Santo Tomé, Santa María la Blanca y San Juan de los Reyes. Sola, la entrada a los Jesuitas cuesta 4 €.",
   pr:"Con la pulsera turística",hr:"En invierno, todos los días de 10:00 a 17:45",dur:"35 min"},
  {h:"13:00",m:780,n:"Calle de Santo Tomé y mazapán",ic:"cake",la:39.85682,lo:-4.02742,q:"Obrador de Mazapán Santo Tomé, Calle de Santo Tomé 3, Toledo",
   t:"Paseo de unos 9 minutos desde la Catedral hasta la calle de Santo Tomé. Aquí está el Obrador Santo Tomé, que hace mazapán desde 1856.",
   tip:"El mazapán bueno se compra en obradores como este; las cajas baratas de los escaparates de Zocodover suelen ser industriales.",dur:"15 min"},
- {h:"13:10",m:790,n:"El Entierro del Señor de Orgaz",ic:"art",la:39.85675,lo:-4.0282,q:"Iglesia de Santo Tomé Toledo",
+ {h:"13:10",m:790,n:"El Entierro del Señor de Orgaz",pay:1,alt:"Gratis: la calle de Santo Tomé y su torre mudéjar se ven desde fuera. Sigue hacia la Judería.",ic:"art",la:39.85675,lo:-4.0282,q:"Iglesia de Santo Tomé Toledo",
   t:"En la iglesia de Santo Tomé está la obra maestra del Greco, pintada en 1586 justo encima de la tumba del señor al que retrata.",
-  tip:"Aquí entras con la pulsera turística que compraste en los Jesuitas.",
+  tip:"Si entran, sirve la pulsera turística.",
   pr:"Con la pulsera turística",dur:"20 min"},
  {h:"13:35",m:815,n:"Almuerzo",ic:"food",la:39.85845,lo:-4.0225,q:"restaurantes casco histórico Toledo",
   t:"Hora de almorzar algo típico: carcamusas, perdiz a la toledana y, de postre, sopa de almendras. Los sitios de la pestaña Comer quedan a unos 10 minutos andando.",
   tip:"Para almorzar, mejor salir dos calles de Zocodover: en la plaza la mayoría de los restaurantes son para turistas de paso. Las opciones están en la pestaña Comer.",
   pr:"Menú del día: unos 12–15 €",dur:"1 h",go:"comer"},
- {h:"14:40",m:880,n:"Museo del Greco",ic:"art",la:39.8553,lo:-4.02893,q:"Museo del Greco Toledo",
+ {h:"14:40",m:880,n:"Museo del Greco",pay:1,alt:"Gratis, justo al lado: el mirador del Paseo del Tránsito, con el Tajo a los pies (es uno de los rincones secretos).",ic:"art",la:39.8553,lo:-4.02893,q:"Museo del Greco Toledo",
   t:"A dos minutos de Santo Tomé, en el Paseo del Tránsito. Recrea una casa toledana de la época del pintor y guarda varias de sus obras, como la Vista y plano de Toledo.",
   tip:"No entra en la pulsera turística. Al salir, asómate al mirador del Paseo del Tránsito, justo al lado: es uno de los rincones secretos.",
   pr:"Entrada: 3 €",hr:"De noviembre a febrero, de martes a sábado de 9:30 a 18:00 (los lunes cierra)",dur:"40 min"},
- {h:"15:25",m:925,n:"Sinagoga de Santa María la Blanca",ic:"castle",la:39.85696,lo:-4.03029,q:"Sinagoga de Santa María la Blanca Toledo",
+ {h:"15:25",m:925,n:"Sinagoga de Santa María la Blanca",pay:1,alt:"Gratis: pasear por las calles de la Judería buscando los azulejos azules y blancos del suelo y las fachadas.",ic:"castle",la:39.85696,lo:-4.03029,q:"Sinagoga de Santa María la Blanca Toledo",
   t:"Una sinagoga mudéjar con un bosque de arcos de herradura blancos. Estás en plena Judería.",
   tip:"Rincón: fíjate en los azulejos azules y blancos del suelo y las fachadas: hay más de 500 y marcan las calles del antiguo barrio judío.",
   pr:"Con la pulsera turística",hr:"En invierno, de 10:00 a 17:45",dur:"15 min",img:"juderia"},
- {h:"15:45",m:945,n:"Monasterio de San Juan de los Reyes",ic:"tree",la:39.85782,lo:-4.03193,q:"Monasterio de San Juan de los Reyes Toledo",
+ {h:"15:45",m:945,n:"Monasterio de San Juan de los Reyes",pay:1,alt:"Gratis: la fachada, con las cadenas colgadas, se ve desde la calle. De ahí se baja al Puente de San Martín.",ic:"tree",la:39.85782,lo:-4.03193,q:"Monasterio de San Juan de los Reyes Toledo",
   t:"Lo mandaron construir los Reyes Católicos. Su claustro de dos plantas es de lo más bonito de Toledo.",
   tip:"Mira las cadenas colgadas en la fachada: cada una tiene su historia. Con calma se ve en unos 30 minutos.",
   pr:"Con la pulsera turística",dur:"30 min"},
@@ -1234,7 +1238,7 @@ const RN=[
  ["Mirador del Paseo del Tránsito","Un balcón sobre el río Tajo frente a la Sinagoga del Tránsito. Poca gente y muy buenas vistas.",8,39.85542,-4.02909,"Paseo del Tránsito Toledo","mirador"],
  ["Los azulejos de la Judería","Más de 500 azulejos azules y blancos en el suelo y las fachadas marcan las calles del antiguo barrio judío. Ve fijándote mientras caminas.",9,39.85669,-4.03061,"Calle de los Reyes Católicos Toledo","azulejos"]];
 /* plan B si llueve */
-const LLUVIA=[["church","La Catedral está toda a cubierto: si llueve, quédate más rato en la sacristía, el coro y el museo."],["castle","Si llueve fuerte, cambia el Puente de San Martín y el mirador por el <b>Museo Sefardí</b>, en la Sinagoga del Tránsito, en la Judería: 3 €, de martes a sábado de 9:30 a 20:00."],["art","O por el <b>Museo de Santa Cruz</b>, al lado de Zocodover, con cuadros del Greco: 5 €, de lunes a sábado de 10:00 a 18:00."],["train","Para terminar, pide el taxi directo a la estación: con lluvia la vista del mirador se pierde."],["umb","Lleva un paraguas plegable y calzado que no resbale."]];
+const LLUVIA=[["church","Si llueve fuerte, quizá valga la pena pagar algo a cubierto: la Catedral (12 €) es lo que más tiempo da."],["castle","Si llueve fuerte, cambia el Puente de San Martín y el mirador por el <b>Museo Sefardí</b>, en la Sinagoga del Tránsito, en la Judería: 3 €, de martes a sábado de 9:30 a 20:00."],["art","O por el <b>Museo de Santa Cruz</b>, al lado de Zocodover, con cuadros del Greco: 5 €, de lunes a sábado de 10:00 a 18:00."],["train","Para terminar, pide el taxi directo a la estación: con lluvia la vista del mirador se pierde."],["umb","Lleva un paraguas plegable y calzado que no resbale."]];
 /* tiempo: previsión guardada (se actualiza sola con internet) */
 const WX0={at:"2026-11-19T18:30",d:[3,14,10,5],h:{10:[3,11,0],12:[3,13,3],14:[3,14,0],16:[3,14,0]}};
 const RT={tipico:["Cocina toledana","food"],tapas:["Tapas y raciones","moon"],dulce:["Dulces","cake"]};
@@ -1301,7 +1305,7 @@ function hoyBox(){const f=phase(),h=Math.floor(f.t.m/60);
     <div class="acts"><button class="btn" type="button" data-stop="0">Ver la ruta</button></div></div>`}
   const s=ST[k],nx=ST[k+1];
   return head(h<13?"sunny":"walk",`${G0}, ${esc(NOMBRE)}`)+`<p class="hsub">Hoy, viernes 20 · Toledo</p><p class="hl3">Ahora: ${esc(s.n)}</p>
-    <ul class="list"><li><span class="ic">${ico(s.ic)}</span><span>${esc(s.t)}</span></li></ul>
+    <ul class="list"><li><span class="ic">${ico(s.pay?"walk":s.ic)}</span><span>${s.pay?`<b>Sin pagar:</b> ${esc(s.alt)} <small style="display:block;color:var(--soft);margin-top:4px">Entrar es opcional (${esc(s.pr||"de pago")}).</small>`:esc(s.t)}</span></li></ul>
     ${nx?`<p class="nxt"><b>A las ${nx.h}:</b> ${esc(nx.n)}</p>`:`<p class="nxt"><b>Tu tren sale a las 17:30.</b> Llega a la estación unos 15 minutos antes.</p>`}
     <div class="acts"><button class="btn" type="button" data-stop="${k}">Ver detalles</button>${s.q?`<a class="btn ghost" style="display:inline-grid;place-items:center;text-decoration:none" href="${map(s.q)}" target="_blank" rel="noopener">Cómo llegar</a>`:""}</div></div>`}
 
@@ -1329,8 +1333,8 @@ async function loadWx(){if(LS("wx")&&Date.now()-new Date(LS("wx").at).getTime()<
 /* ---------- ruta ---------- */
 function stopHTML(s,i,open,now){
   const ln=[s.pr&&`<li><span class="ic">${ico("ticket")}</span><span>${esc(s.pr)}</span></li>`,s.hr&&`<li><span class="ic">${ico("cal")}</span><span>${esc(s.hr)}</span></li>`,s.tip&&`<li><span class="ic">${ico("heart")}</span><span>${esc(s.tip)}</span></li>`].filter(Boolean).join("");
-  return `<article class="day stp${open?" open":""}${now?" today":""}" id="st${i}"><button type="button" class="dh" aria-expanded="${open}"><span class="db hr"><b>${s.h}</b><small>${i+1} de ${ST.length}</small></span><span class="t"><b>${esc(s.n)}</b><small>${esc(s.dur)}${now?" · ahora":""}</small></span>${ico("chev",2.2).replace("<svg","<svg class=\"chev\"")}</button>
-  <div class="det">${s.img?`<div class="ph sphoto">${`<img src="fotos/${s.img}.jpg" alt="">`}</div>`:""}<p class="stx">${esc(s.t)}</p>${ln?`<ul class="list">${ln}</ul>`:""}
+  return `<article class="day stp${s.pay?" opt":""}${open?" open":""}${now?" today":""}" id="st${i}"><button type="button" class="dh" aria-expanded="${open}"><span class="db hr"><b>${s.h}</b><small>${i+1} de ${ST.length}</small></span><span class="t"><b>${esc(s.n)}</b><small>${s.pay?`<span class="opg">Opcional · de pago</span> `:""}${esc(s.dur)}${now?" · ahora":""}</small></span>${ico("chev",2.2).replace("<svg","<svg class=\"chev\"")}</button>
+  <div class="det">${s.img?`<div class="ph sphoto">${`<img src="fotos/${s.img}.jpg" alt="">`}</div>`:""}${s.pay?`<p class="altg">${ico("walk",2)}<span><b>Sin pagar:</b> ${esc(s.alt)}</span></p><p class="stx" style="margin-top:10px"><b>Si deciden entrar:</b> ${esc(s.t)}</p>`:`<p class="stx">${esc(s.t)}</p>`}${ln?`<ul class="list">${ln}</ul>`:""}
   <div class="acts">${s.go?`<button class="btn" type="button" data-go="${s.go}">Ver dónde comer</button>`:`<a class="btn" style="display:inline-grid;place-items:center;text-decoration:none" href="${map(s.q)}" target="_blank" rel="noopener">Ver en Google Maps</a>`}<button class="btn ghost" type="button" data-pt="r${i}">En el mapa</button></div></div></article>`}
 function renderHome(){const f=phase(),k=f.p==="day"&&f.t.m<17*60+30?curIdx(f.t.m):-2;
   $("nowbox").innerHTML=hoyBox();
