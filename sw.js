@@ -1,11 +1,11 @@
 /* Escapada a Toledo: guarda la app en el móvil para usarla sin internet */
-const V = "et-escapada-toledo-v32", T = "et-escapada-toledo-mapa"; /* solo borra sus propias copias: en github.io todas las apps comparten el mismo sitio */
+const V = "et-escapada-toledo-v38", T = "et-escapada-toledo-mapa"; /* solo borra sus propias copias: en github.io todas las apps comparten el mismo sitio */
 const FILES = ["./", "index.html", "manifest.json", "icono.png", "icono-192.png", "favicon-32.png", "apple-touch-icon.png",
   "fotos/panorama.jpg", "fotos/catedral.jpg", "fotos/juderia.jpg",
   "fotos/rincones/mirador.jpg", "fotos/rincones/cobertizo.jpg", "fotos/rincones/azulejos.jpg",
   "fotos/rincones/ventana.jpg", "fotos/rincones/hombre-de-palo.jpg", "fotos/rincones/placas.jpg", "fotos/rincones/tortura.jpg",
   "fotos/tiempo/sol.png", "fotos/tiempo/solnube.png", "fotos/tiempo/nubes.png", "fotos/tiempo/lluvia.png", "fotos/tiempo/tormenta.png",
-  "fotos/comer/pedir.png", "fotos/comer/toledana.png", "fotos/comer/tapas.png", "fotos/comer/dulces.png", "fonts/marcellus.woff2"];
+  "fotos/comer/pedir.png", "fotos/comer/toledana.png", "fotos/comer/tapas.png", "fotos/comer/dulces.png", "fonts/marcellus.woff2", "fotos/titulo.webp", "fotos/titulo-filo.webp"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => Promise.allSettled(FILES.map(f => fetch(new Request(f, { cache: "reload" })).then(r => { if (r.ok) return c.put(f, r); })))).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith("et-") && k !== V && k !== T).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
